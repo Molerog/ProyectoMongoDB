@@ -12,28 +12,28 @@ const UserController = {
         confirmed:false,
         password : hash,
         role: "user",
-        }); //...req.body representa todo lo demás
-      //   const url ='http://localhost:8080/users/confirm/'+ req.body.email
-      //   await transporter.sendMail({
-      //    to: req.body.email,
-      //    subject: "Confirme su registro",
-      //    html: `<h3>Bienvenido, estás a un paso de registrarte </h3>
-      //    <a href="${url}"> Click para confirmar tu registro</a>
-      //    `
-      //  });
-       res.status(201).send({ message: 'We sent you an email to confirm your register...', user });
+        }); //...req.body representa todo lo demás(es un spread y no podríamos modificar las propiedades que quisieramos de body)
+        const url ='http://localhost:8080/users/confirm/'+ req.body.email //enviamos esta url en forma de enlace al correo puesto por el usuario
+        await transporter.sendMail({
+         to: req.body.email,
+         subject: "Confirme su registro",
+         html: `<h3>Bienvenido, estás a un paso de registrarte </h3>
+         <a href="${url}"> Click para confirmar tu registro</a>
+         `
+       });
+       res.status(201).send({ message: 'We have sent you an email to confirm your register...', user });
     } catch (error) {
         console.error(error)
        res.status(500).send({ message: 'We had an issue creating the user...' })
     }
 },
 
-async confirm(req,res){
+async confirm(req,res){ //este función confirm se aplica cuando clicamos en el enlace enviado al email 
   try {
      await User.updateOne({
       email: req.params.email
     },{confirmed:true})
-    res.status(201).send("Usuario confirmado con exito");
+    res.status(201).send("User confirm succesfull");
   } catch (error) {
     console.error(error)
   }
@@ -42,7 +42,6 @@ async confirm(req,res){
 async login(req, res) {
   try {
     const user = await User.findOne({email: req.body.email});
-    console.log(user)
     if (!user) {
       return res
         .status(400)
@@ -58,7 +57,11 @@ async login(req, res) {
         .send({ message: 'User or password incorrect...' });
     }
     const token = jwt.sign({ id: user._id, UserId: user.id}, jwt_secret);
+    if (user.token.length <=4){
     user.token.push(token);
+  } else {
+    return res.status(400).send({message: "You can't have more tokens..."})
+  }
     await user.save()
     res.send({ message: 'Welcome' + user.name, user, token });
   } catch (error) {
@@ -72,7 +75,7 @@ async login(req, res) {
         res.send({ user, message: 'User deleted' })
     } catch (error) {
         console.error(error)
-        res.status(500).send({ message: 'there was a problem trying to remove the user' })
+        res.status(500).send({ message: 'There was a problem trying to remove the user' })
     }
 },
 async update(req, res) {

@@ -7,7 +7,7 @@ const PostController ={
             res.status(201).send(post)
         } catch (error) {
             console.error(error)
-            res.status(500).send({ message: 'Ha habido un problema al crear el post' })
+            res.status(500).send({ message: 'We had an issue creating the post...' })
         }
     },
     async getAll(req, res) {
@@ -21,19 +21,26 @@ const PostController ={
     async getById(req, res) {
         try {
             const post = await Post.findById(req.params._id) //atengo al _id
+            if(post === null){
+              res.status(400).send({message: "The id you introduced doesn't exist"})
+              return
+            }
             res.send(post)
         } catch (error) {
             console.error(error);
         }
     },
-
     async getPostsByName(req, res) {
         try {
-          if (req.params.name.length>20){ //hay que poner un límite para que nadie ponga muchas caracteres por seguridad; tenerlo en cuenta siempre en el backend cuando apliquemos expresiones regulares.
-            return res.status(400).send('Busqueda demasiado larga')
+          if (req.params.title.length>20){ //hay que poner un límite para que nadie ponga muchas caracteres por seguridad; tenerlo en cuenta siempre en el backend cuando apliquemos expresiones regulares.
+            return res.status(400).send('Your search was too long')
           }
-          const name = new RegExp(req.params.name, "i"); //la "i" es una expresión regular de RegExp que no tiene en cuenta las mayúsculas.
-          const post = await Post.find({name}); //lo mismo que name:name
+          const title = new RegExp(req.params.title, "i"); //la "i" es una expresión regular de RegExp que no tiene en cuenta las mayúsculas.
+          const post = await Post.findOne({title}); //lo mismo que name:name
+          if(post === null){
+            res.status(400).send({message: "Sorry, we can't find that post"})
+            return
+          }
           res.send(post);
         } catch (error) {
           console.log(error);
@@ -42,21 +49,29 @@ const PostController ={
       async delete(req, res) {
         try {
             const post = await Post.findByIdAndDelete(req.params._id)
-            res.send({ post, message: 'Post deleted' })
+            res.send({post, message: 'Post deleted'})
         } catch (error) {
             console.error(error)
-            res.status(500).send({ message: 'there was a problem trying to remove the publication' })
+            res.status(500).send({message: 'There was a problem trying to remove the post'})
         }
     },
     async update(req, res) {
         try {
-          const post = await Post.findByIdAndUpdate(req.params._id, req.body, { new: true }) //el new:true me trae el nuevo actualizado. Aquí se pasan 3 parámetros; la busqueda por id, lo que queremos actualizar y el nuevo objeto actualizado
-          res.send({ message: "product successfully updated", post });
+          const post = await Post.findByIdAndUpdate(req.params._id, req.body, {new: true}) //el new:true me trae el nuevo actualizado. Aquí se pasan 3 parámetros; la busqueda por id, lo que queremos actualizar y el nuevo objeto actualizado
+          if (post === null){
+            res.status(400).send({message: "The post you try to update doesn't exist"})
+            return
+          }
+          if (req.params._id.length <= 23 ){
+            res.status(400).send({message: "You may need to introduce a valid Id format"})
+            return
+          }
+          
+          res.send({ message: "Post successfully updated", post });
         } catch (error) {
           console.error(error);
         }
-      },
-    
+      },      
 }
 
 module.exports = PostController;
