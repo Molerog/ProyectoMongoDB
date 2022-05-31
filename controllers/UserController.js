@@ -4,11 +4,13 @@ const User = require('../models/User');
 const UserController = {
   async create(req,res){
     try {
-        const user = await User.create(req.body)
+        const user = await User.create({...req.body, 
+        confirmed:false})
+        
         res.status(201).send(user)
     } catch (error) {
         console.error(error)
-        res.status(500).send({ message: 'Ha habido un problema al crear al usuario' })
+        res.status(500).send({ message: 'We had an issue creating the user...' })
     }
 },
   async delete(req, res) {
@@ -37,8 +39,5 @@ async getAll(req, res) {
   }
 },
 }
-
-
-
 
 module.exports = UserController;
