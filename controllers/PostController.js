@@ -3,7 +3,12 @@ const Post = require('../models/Post');
 const PostController ={
     async create(req,res){
         try {
-            const post = await Post.create(req.body)
+            const post = await Post.create({
+              ...req.body,
+              userId: req.user._id,
+              status: "posted",
+              postdate: new Date()
+            })
             res.status(201).send(post)
         } catch (error) {
             console.error(error)
@@ -62,10 +67,10 @@ const PostController ={
             res.status(400).send({message: "The post you try to update doesn't exist"})
             return
           }
-          if (req.params._id.length <= 23 ){
-            res.status(400).send({message: "You may need to introduce a valid Id format"})
-            return
-          }
+          // if (req.params._id.length <= 23 ){
+          //   res.status(400).send({message: "You may need to introduce a valid Id format"})
+          //   return
+          // }
           
           res.send({ message: "Post successfully updated", post });
         } catch (error) {

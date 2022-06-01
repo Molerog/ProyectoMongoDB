@@ -5,7 +5,7 @@ const {jwt_secret} = require('../config/keys');
 const transporter = require("../config/nodemailer");
 
 const UserController = {
-  async create(req,res){
+  async create(req,res,next){
     try {
         const hash = bcrypt.hashSync(req.body.password, 10)
         const user = await User.create({...req.body,
@@ -23,8 +23,9 @@ const UserController = {
        });
        res.status(201).send({ message: 'We have sent you an email to confirm your register...', user });
     } catch (error) {
-        console.error(error)
-       res.status(500).send({ message: 'We had an issue creating the user...' })
+      console.log(error)
+      error.or = "User"
+      next(error)
     }
 },
 
@@ -56,14 +57,11 @@ async login(req, res) {
         .status(400)
         .send({ message: 'User or password incorrect...' });
     }
-    const token = jwt.sign({ id: user._id, UserId: user.id}, jwt_secret);
-    if (user.token.length <=4){
-    user.token.push(token);
-  } else {
-    return res.status(400).send({message: "You can't have more tokens..."})
-  }
-    await user.save()
-    res.send({ message: 'Welcome' + user.name, user, token });
+    const token = jwt.sign({ _id: user._id}, jwt_secret);
+    if (user.tokens.length > 4) user.tokens.shift()
+    user.tokens.push(token);
+    await user.save();
+    res.send({ message: 'Welcome ' + user.name, user, token });
   } catch (error) {
     res.status(401).send({ message: 'We had an issue checking the user...' });
   }
@@ -81,7 +79,7 @@ async login(req, res) {
 async update(req, res) {
   try {
     const user = await User.findByIdAndUpdate(req.params._id, req.body, { new: true }) //el new:true me trae el nuevo actualizado. Aquí se pasan 3 parámetros; la busqueda por id, lo que queremos actualizar y el nuevo objeto actualizado
-    res.send({ message: "user successfully updated", user });
+    res.send({ message: "User successfully updated", user });
   } catch (error) {
     console.error(error);
   }
@@ -94,6 +92,20 @@ async getAll(req, res) {
       console.error(error);
   }
 },
+async logout(req, res) {
+  try {
+    await User.findByIdAndUpdate(req.user._id, {     
+      $pull: { tokens: req.headers.authorization },
+    });
+    res.send({ message: "Disconnected" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "We had a problem trying to disconnect you",
+    });
+  }
+},
+
 }
 
 module.exports = UserController;
