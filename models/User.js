@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      unique: true,
+      unique: [true, 'That email already exists'],
       required: [true, 'Please enter an email'],
       validate: [isEmail, 'Please enter a valid email'],
       lowercase: [true, 'Please use only lowercase']
@@ -38,6 +38,14 @@ UserSchema.pre('save', function(next){
   console.log('user about to be created & saved', this)
   next();
 })
+
+UserSchema.post('save', function(error, doc, next) {
+  if (error.name === 'MongoError' && error.code === 11000) {
+    next(new Error('email must be unique',doc));
+  } else {
+    next(error);
+  }
+});
 
 const User = mongoose.model("User", UserSchema);
 

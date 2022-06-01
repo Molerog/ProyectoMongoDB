@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const CommentController = require ('../controllers/CommentController');
+const { authentication, isAuthor } = require('../middleware/authentication');
 
-router.post('/', CommentController.create);
+router.post('/',authentication, CommentController.create);
 router.get('/', CommentController.getAll);
-router.delete('/id/:_id',CommentController.delete);
-router.put('/id/:_id', CommentController.update);
+router.delete('/id/:_id',authentication,isAuthor,CommentController.delete);
+router.put('/id/:_id',authentication,isAuthor, CommentController.update);
 
 
 

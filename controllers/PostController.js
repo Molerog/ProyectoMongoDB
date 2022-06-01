@@ -5,7 +5,7 @@ const PostController ={
         try {
             const post = await Post.create({
               ...req.body,
-              userId: req.user._id,
+              userId: req.user._id, //guardo la ID del dueño del post
               status: "posted",
               postdate: new Date()
             })

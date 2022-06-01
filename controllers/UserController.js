@@ -7,6 +7,8 @@ const transporter = require("../config/nodemailer");
 const UserController = {
   async create(req,res,next){
     try {
+        const test = await User.findOne({ email: req.body.email });
+        if (test) return res.status(400).send("Email already exists, please use another one");
         const hash = bcrypt.hashSync(req.body.password, 10)
         const user = await User.create({...req.body,
         confirmed:false,
@@ -105,6 +107,15 @@ async logout(req, res) {
     });
   }
 },
+
+async getUserLogged(req,res){
+  try {
+   const user = await User.findById(req.user._id) // también se puede User.findOne({_id: req.user._id})
+   res.send(user);
+  } catch (error) {
+    res.status(500).send({message: "We had a problem searching that information"});
+  }
+}
 
 }
 

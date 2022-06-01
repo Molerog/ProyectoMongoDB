@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
+const ObjectId = mongoose.SchemaTypes.ObjectId;
 
 const CommentSchema = new mongoose.Schema({
-    username: String,
+    userId:{
+        type: ObjectId,
+        ref: 'User'
+    },
     body: String,
     
 }, { timestamps: true });
