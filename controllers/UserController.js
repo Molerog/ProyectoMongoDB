@@ -11,9 +11,10 @@ const UserController = {
       const user = await User.create({
         ...req.body,
         confirmed: false,
-        password: hash,
+        password: hash,        
         role: "user",
-      }); //...req.body representa todo lo demás(es un spread y no podríamos modificar las propiedades que quisieramos de body)
+         });
+       //...req.body representa todo lo demás(es un spread y no podríamos modificar las propiedades que quisieramos de body)
       const url = "http://localhost:8080/users/confirm/" + req.body.email; //enviamos esta url en forma de enlace al correo puesto por el usuario
       await transporter.sendMail({
         to: req.body.email,

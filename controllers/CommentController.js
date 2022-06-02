@@ -5,14 +5,18 @@ const Post = require('../models/Post')
 const CommentController ={
     async create(req,res){
         try {
+            const exist = await Post.findById(req.params._id)
+            if(exist){
             const comment = await Comment.create({
                 ...req.body,
                 userId: req.user._id,
                 postId: req.params._id
             })
-            await Post.findByIdAndUpdate(req.params._id,
+            await Post.findByIdAndUpdate
+            (req.params._id,
                 {$push: {comments: comment._id}})
                 res.status(201).send(comment)
+            } else res.status(400).send({message: "The post doesn't exist"});
         } catch (error) {
             console.error(error)
             res.status(500).send({ message: 'We had a problem adding the comment...' })

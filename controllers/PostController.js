@@ -93,6 +93,8 @@ const PostController ={
       },
       async like(req, res) {
         try {
+          const exist = await Post.findById(req.params._id)
+          if (!exist.likes.includes(req.user._id)){
           const post = await Post.findByIdAndUpdate(
             req.params._id,
             { $push: {likes: req.user._id}},
@@ -104,8 +106,27 @@ const PostController ={
             { new : true}
           );
           res.send(post);
+        }
+        else {
+          res.status(400).send({message: "You can't give more likes"})
+        }
         } catch (error) {
-          res.status(500).send({message: "There was a problem with your like"});
+          res.status(500).send({message: "There was an issue in the controller" });
+        }
+      },
+      async getInfo(req, res){
+        try {
+          const post = await Post.findById(req.params._id)
+          .populate('userId')
+          .populate({
+            path: "comments",
+            populate: {
+              path: "userId",
+            },
+          });                
+          res.status(200).send(post)
+        } catch (error) {
+          res.status(400).send({message: "There was a problem getting that info"})
         }
       }      
 }
