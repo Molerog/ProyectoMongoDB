@@ -23,6 +23,17 @@ const PostController ={
             console.error(error);
         }
     },
+    async getProductsByPage(req, res) {
+      try {
+        const {page = 1, limit = 10} = req.query;
+        const products = await Post.find()
+        .limit(limit * 1)
+        .skip((page - 1) * limit);
+        res.send(products);
+      } catch (error) {
+        res.status(400).send({message: "We had an issue trying to show you de posts"})
+      }
+    },
     async getById(req, res) {
         try {
             const post = await Post.findById(req.params._id) //atengo al _id

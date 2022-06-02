@@ -15,10 +15,12 @@ const handleValidationError = (err, res) => {
  }
 
 const typeError = (err, req, res, next) => {   
-    const errOrigin = err.or
-    if(err.name === 'ValidationError' || err.name === 'UniqueConstraintError'){
-        return err = handleValidationError(err, res);
-    }  else if (errOrigin === 'User'){
+    const errOrigin = err.origin
+    if(err.name === 'ValidationError') return err = handleValidationError(err, res);
+    else if (err.code === 11000){
+        res.status(400).send({message: 'The email already exists'})
+    }  
+     else if (errOrigin === 'User'){
            res.status(500).send('We had an issue creating the User...');
         } else if (errOrigin === 'Comments'){
             res.status(500).send('We had an issue creating the Comments...');

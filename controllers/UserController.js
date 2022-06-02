@@ -7,11 +7,9 @@ const transporter = require("../config/nodemailer");
 const UserController = {
   async create(req,res,next){
     try {
-        const test = await User.findOne({ email: req.body.email });
-        if (test) return res.status(400).send("Email already exists, please use another one");
         const hash = bcrypt.hashSync(req.body.password, 10)
         const user = await User.create({...req.body,
-        confirmed:false,
+        confirmed: false,
         password : hash,
         role: "user",
         }); //...req.body representa todo lo demás(es un spread y no podríamos modificar las propiedades que quisieramos de body)
@@ -26,16 +24,16 @@ const UserController = {
        res.status(201).send({ message: 'We have sent you an email to confirm your register...', user });
     } catch (error) {
       console.log(error)
-      error.or = "User"
+      error.origin = "User"
       next(error)
     }
 },
 
-async confirm(req,res){ //este función confirm se aplica cuando clicamos en el enlace enviado al email 
+async confirm(req,res){ //esta función confirm se aplica cuando clicamos en el enlace enviado al email 
   try {
      await User.updateOne({
       email: req.params.email
-    },{confirmed:true})
+    },{confirmed:true}) //no esta actualizando el email, está buscando al usuario por el email introducido en el body al registrarse que volverá como parámetro
     res.status(201).send("User confirm succesfull");
   } catch (error) {
     console.error(error)
