@@ -10,6 +10,8 @@ const PostController ={
               status: "posted",
               postdate: new Date()
             })
+            await User.findByIdAndUpdate(req.user._id,
+              {$push: {postIds: post._id}})
             res.status(201).send(post)
         } catch (error) {
             console.error(error)
@@ -98,7 +100,7 @@ const PostController ={
           );
           await User.findByIdAndUpdate(
             req.user._id,
-            { $push: { wishList: req.params._id}},
+            { $push: { wishList: req.params._id }},
             { new : true}
           );
           res.send(post);

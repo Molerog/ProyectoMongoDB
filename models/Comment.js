@@ -6,7 +6,15 @@ const CommentSchema = new mongoose.Schema({
         type: ObjectId,
         ref: 'User'
     },
-    body: String,
+    postId:{
+        type: ObjectId,
+        ref: 'Post'
+    },
+    body: {
+     type: String,
+     required: [true, "You can't post an empty comment"]
+    }
+
     
 }, { timestamps: true });
 
