@@ -22,9 +22,10 @@ const typeError = (err, req, res, next) => {
     }  
      else if (errOrigin === 'User'){
            res.status(500).send('We had an issue creating the User...');
-        } else if (errOrigin === 'Comments'){
-            res.status(500).send('We had an issue creating the Comments...');
+        } else if (errOrigin === 'Comment'){
+            res.status(500).send('We had an issue creating the Comment...');
         } else if (errOrigin === 'Post') {
+            res.status(500).send('We had an issue creating the Post...')
         }
         else {
             res.status(500).send('There is an error in your sintaxis...');

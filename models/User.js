@@ -42,13 +42,6 @@ UserSchema.pre('save', function(next){
   next();
 })
 
-UserSchema.post('save', function(error, doc, next) {
-  if (error.name === 'MongoError' && error.code === 11000) {
-    next(new Error('email must be unique',doc));
-  } else {
-    next(error);
-  }
-});
 
 const User = mongoose.model("User", UserSchema);
 

@@ -3,7 +3,7 @@ const Post = require('../models/Post')
 
 
 const CommentController ={
-    async create(req,res){
+    async create(req,res,next){
         try {
             const exist = await Post.findById(req.params._id)
             if(exist){
@@ -16,10 +16,11 @@ const CommentController ={
             (req.params._id,
                 {$push: {comments: comment._id}})
                 res.status(201).send(comment)
-            } else res.status(400).send({message: "The post doesn't exist"});
+            } else res.status(400).send({message: "This post doesn't exist"});
         } catch (error) {
-            console.error(error)
-            res.status(500).send({ message: 'We had a problem adding the comment...' })
+            console.log(error);
+          error.origin = "Comment";
+          next(error);
         }
     },
     async delete(req, res) {

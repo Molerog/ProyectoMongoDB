@@ -12,7 +12,7 @@ const CommentSchema = new mongoose.Schema({
     },
     body: {
      type: String,
-     required: [true, "You can't post an empty comment"]
+     required: [true, "You can't post an empty comment!"]
     }
 
     

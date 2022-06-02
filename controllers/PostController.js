@@ -2,7 +2,7 @@ const Post = require('../models/Post');
 const User = require('../models/User');
 
 const PostController ={
-    async create(req,res){
+    async create(req,res,next){
         try {
             const post = await Post.create({
               ...req.body,
@@ -14,8 +14,9 @@ const PostController ={
               {$push: {postIds: post._id}})
             res.status(201).send(post)
         } catch (error) {
-            console.error(error)
-            res.status(500).send({ message: 'We had an issue creating the post...' })
+          console.log(error);
+          error.origin = "Post";
+          next(error);
         }
     },
     async getAll(req, res) {
@@ -109,6 +110,29 @@ const PostController ={
         }
         else {
           res.status(400).send({message: "You can't give more likes"})
+        }
+        } catch (error) {
+          res.status(500).send({message: "There was an issue in the controller" });
+        }
+      },
+      async removeLike(req, res) {
+        try {
+          const exist = await Post.findById(req.params._id)
+          if (exist.likes.includes(req.user._id)){
+          const post = await Post.findByIdAndUpdate(
+            req.params._id,
+            { $pull: {likes: req.user._id}},
+            { new: true }
+          );
+          await User.findByIdAndUpdate(
+            req.user._id,
+            { $pull: { wishList: req.params._id }},
+            { new : true}
+          );
+          res.status(200).send({message: 'Like removed', post});
+        }
+        else {
+          res.status(400).send({message: "You can't remove a like before giving one!"})
         }
         } catch (error) {
           res.status(500).send({message: "There was an issue in the controller" });

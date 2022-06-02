@@ -93,7 +93,7 @@ const UserController = {
     try {
       const user = await User.findByIdAndUpdate(req.params._id, req.body, {
         new: true,
-      }); //el new:true me trae el nuevo actualizado. Aquí se pasan 3 parámetros; la busqueda por id, lo que queremos actualizar y el nuevo objeto actualizado
+      }); //el new:true me trae el nuevo actualizado (solo para updates). Aquí se pasan 3 parámetros; la busqueda por id, lo que queremos actualizar y el nuevo objeto actualizado
       res.send({ message: "User successfully updated", user });
     } catch (error) {
       console.error(error);
