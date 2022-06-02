@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const {isEmail} = require('validator');
+const ObjectId = mongoose.SchemaTypes.ObjectId;
 
 const UserSchema = new mongoose.Schema(
   {
@@ -23,6 +24,9 @@ const UserSchema = new mongoose.Schema(
     confirmed: Boolean,
     role: "",
     tokens: [],
+    postId: [{type: ObjectId, ref: 'Post'}],
+    commentId:[{type: ObjectId, ref: 'Comment'}],
+    wishList: [{type: ObjectId, ref: 'Post'}]
   },
   { timestamps: true },
 

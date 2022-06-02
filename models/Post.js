@@ -15,6 +15,7 @@ const PostSchema = new mongoose.Schema({
         type: ObjectId,
         ref: 'User'
     },
+    likes:[{type: ObjectId}],
     postdate: Date
 }, { timestamps: true });
 

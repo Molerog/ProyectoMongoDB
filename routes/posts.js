@@ -11,5 +11,6 @@ router.post('/',authentication,PostController.create);
 router.delete('/id/:_id',authentication,isAuthor, PostController.delete);
 router.put('/id/:_id',authentication,isAuthor, PostController.update);
 router.get('/postsbypage/',authentication,PostController.getProductsByPage);
+router.put('/likes/:_id', authentication,PostController.like);
 
 module.exports = router;

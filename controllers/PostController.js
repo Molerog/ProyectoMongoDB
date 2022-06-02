@@ -1,4 +1,5 @@
 const Post = require('../models/Post');
+const User = require('../models/User');
 
 const PostController ={
     async create(req,res){
@@ -87,7 +88,24 @@ const PostController ={
         } catch (error) {
           console.error(error);
         }
-      },      
+      },
+      async like(req, res) {
+        try {
+          const post = await Post.findByIdAndUpdate(
+            req.params._id,
+            { $push: {likes: req.user._id}},
+            { new: true }
+          );
+          await User.findByIdAndUpdate(
+            req.user._id,
+            { $push: { wishList: req.params._id}},
+            { new : true}
+          );
+          res.send(post);
+        } catch (error) {
+          res.status(500).send({message: "There was a problem with your like"});
+        }
+      }      
 }
 
 module.exports = PostController;
