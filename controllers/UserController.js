@@ -5,9 +5,12 @@ const JWT_SECRET = process.env.JWT_SECRET
 const transporter = require("../config/nodemailer");
 
 const UserController = {
-  async create(req, res, next) {
+  async create(req, res, next) {   
     try {
-      const hash = bcrypt.hashSync(req.body.password, 10);
+      let hash;
+      if (req.body.password !== undefined){
+       hash = bcrypt.hashSync(req.body.password, 10);
+      }
       const user = await User.create({
         ...req.body,
         confirmed: false,

@@ -40,6 +40,10 @@ const PostController ={
     },
     async getById(req, res) {
         try {
+          if (req.params._id.length !== 24 ){
+            res.status(400).send({message: "You may need to introduce a valid Id format"})
+            return
+          }
             const post = await Post.findById(req.params._id) //atengo al _id
             if(post === null){
               res.status(400).send({message: "The id you introduced doesn't exist"})
@@ -82,10 +86,6 @@ const PostController ={
             res.status(400).send({message: "The post you try to update doesn't exist"})
             return
           }
-          // if (req.params._id.length <= 23 ){
-          //   res.status(400).send({message: "You may need to introduce a valid Id format"})
-          //   return
-          // }
           
           res.send({ message: "Post successfully updated", post });
         } catch (error) {
