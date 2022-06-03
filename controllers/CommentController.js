@@ -5,15 +5,15 @@ const Post = require('../models/Post')
 const CommentController ={
     async create(req,res,next){
         try {
-            const exist = await Post.findById(req.params._id)
+            const exist = await Post.findById(req.body.postId)
             if(exist){
             const comment = await Comment.create({
                 ...req.body,
                 userId: req.user._id,
-                postId: req.params._id
+                postId: req.body._id
             })
             await Post.findByIdAndUpdate
-            (req.params._id,
+            (req.body._id,
                 {$push: {comments: comment._id}})
                 res.status(201).send(comment)
             } else res.status(400).send({message: "This post doesn't exist"});
@@ -26,10 +26,10 @@ const CommentController ={
     async delete(req, res) {
         try {
             const comment = await Comment.findByIdAndDelete(req.params._id)
-            res.send({ comment, message: 'User deleted' })
+            res.send({ comment, message: 'Comment deleted' })
         } catch (error) {
             console.error(error)
-            res.status(500).send({ message: 'there was a problem trying to remove the user' })
+            res.status(500).send({ message: 'there was a problem trying to remove the comment' })
         }
     },
     async update(req, res) {

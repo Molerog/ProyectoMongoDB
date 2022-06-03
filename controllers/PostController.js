@@ -141,12 +141,12 @@ const PostController ={
       async getInfo(req, res){
         try {
           const post = await Post.findById(req.params._id)
-          .populate('userId')
-          .populate({
-            path: "comments",
+          .populate('userId', ["name", "email"])
+          .populate({ 
+            path: "comments", select: {body:1},
             populate: {
-              path: "userId",
-            },
+              path: "userId", select: {name:1}
+            }
           });                
           res.status(200).send(post)
         } catch (error) {

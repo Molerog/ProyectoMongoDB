@@ -1,5 +1,6 @@
 const User = require('../models/User');
-const Post = require('../models/Post')
+const Post = require('../models/Post');
+const Comment = require ('../models/Comment');
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET
 
@@ -29,7 +30,7 @@ const authentication = async(req, res, next) => {
     next();
 }
 
-const isAuthor = async(req, res, next) => {
+const isAuthorPost = async(req, res, next) => {
     try {
         const post = await Post.findById(req.params._id);
         if (post.userId.toString() !== req.user._id.toString()) { 
@@ -38,9 +39,22 @@ const isAuthor = async(req, res, next) => {
         next();
     } catch (error) {
         console.error(error)
-        return res.status(500).send({ error, message: 'Ha habido un problema al comprobar la autoría del pedido' })
+        return res.status(500).send({ error, message: 'There was a problem checking the authory of this post' })
     }
 }
 
+const isAuthorComment = async(req, res, next) => {
+    try {
+        const post = await Comment.findById(req.params._id);
+        if (post.userId.toString() !== req.user._id.toString()) { 
+            return res.status(403).send({ message: 'This comment is not yours' });
+        }
+        next();
+    } catch (error) {
+        console.error(error)
+        return res.status(500).send({ error, message: 'There was a problem checking the authory of this comment' })
+    }
 
-module.exports = { authentication, isAdmin,isAuthor };
+}
+
+module.exports = { authentication, isAdmin,isAuthorPost, isAuthorComment };
