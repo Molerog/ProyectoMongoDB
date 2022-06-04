@@ -27,7 +27,7 @@ const PostController ={
             console.error(error);
         }
     },
-    async getProductsByPage(req, res) {
+    async getPostsByPage(req, res) {
       try {
         const {page = 1, limit = 10} = req.query;
         const products = await Post.find()
@@ -117,7 +117,7 @@ const PostController ={
       },
       async removeLike(req, res) {
         try {
-          const exist = await Post.findById(req.params._id)
+          const exist = await Post.findById(req.params._id);
           if (exist.likes.includes(req.user._id)){
           const post = await Post.findByIdAndUpdate(
             req.params._id,

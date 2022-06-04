@@ -10,7 +10,7 @@ router.get('/search/:title', PostController.getPostsByName);
 router.post('/',authentication,PostController.create);
 router.delete('/id/:_id',authentication,isAuthorPost, PostController.delete);
 router.put('/id/:_id',authentication,isAuthorPost, PostController.update);
-router.get('/postsbypage/',authentication,PostController.getProductsByPage);
+router.get('/postsbypage/',authentication,PostController.getPostsByPage);
 router.put('/likes/:_id', authentication,PostController.like);
 router.put('/removelikes/:_id',authentication,PostController.removeLike);
 router.get('/info/:_id',authentication,PostController.getInfo);

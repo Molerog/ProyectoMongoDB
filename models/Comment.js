@@ -13,8 +13,8 @@ const CommentSchema = new mongoose.Schema({
     body: {
      type: String,
      required: [true, "You can't post an empty comment!"]
-    }
-
+    },
+    likes:[{type: ObjectId}],
     
 }, { timestamps: true });
 
