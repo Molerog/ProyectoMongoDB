@@ -13,7 +13,7 @@ const UserController = {
       }
       const user = await User.create({
         ...req.body,
-        confirmed: false,
+        confirmed: true,
         password: hash,        
         role: "user",
          });

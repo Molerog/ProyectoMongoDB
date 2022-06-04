@@ -57,4 +57,17 @@ const isAuthorComment = async(req, res, next) => {
 
 }
 
-module.exports = { authentication, isAdmin,isAuthorPost, isAuthorComment };
+const isTheUser = async(req, res, next) => {
+    try {
+        const user = await User.findById(req.params._id);
+        if (user._id.toString() !== req.user._id.toString()) { 
+            return res.status(403).send({ message: "You don't have permissions for that!" });
+        }
+        next();
+    } catch (error) {
+        console.error(error)
+        return res.status(500).send({ error, message: 'There was a problem checking your identity' })
+    }
+}
+
+module.exports = { authentication, isAdmin,isAuthorPost, isAuthorComment, isTheUser };
