@@ -130,9 +130,6 @@ const UserController = {
         .populate("wishList")
         .populate({
           path: "postIds",
-          populate: {
-            path: "comments",
-          },
         });
       res.send(user);
     } catch (error) {
@@ -141,6 +138,35 @@ const UserController = {
         .send({ message: "We had a problem searching that information" });
     }
   },
+  async getById(req, res) {
+    try {
+      if (req.params._id.length !== 24 ){
+        res.status(400).send({message: "You may need to introduce a valid Id format"})
+        return
+      }
+        const post = await User.findById(req.params._id) //atengo al _id
+        if(post === null){
+          res.status(400).send({message: "The id you introduced doesn't exist"})
+          return
+        }
+        res.send(post)
+    } catch (error) {
+        console.error(error);
+    }
+},
+async getUserByName(req, res) {
+  try {
+    const name = new RegExp(req.params.name, "i"); //la "i" es una expresión regular de RegExp que no tiene en cuenta las mayúsculas.
+    const post = await User.findOne({name}); //lo mismo que name:name
+    if(post === null){
+      res.status(400).send({message: "Sorry, we can't find that User"})
+      return
+    }
+    res.send(post);
+  } catch (error) {
+    console.log(error);
+  }
+},
 };
 
 module.exports = UserController;

@@ -4,10 +4,10 @@ const router = express.Router();
 const PostController = require ('../controllers/PostController');
 const { authentication, isAuthorPost } = require('../middleware/authentication');
 
+router.post('/',authentication,PostController.create);
 router.get('/', PostController.getAll);
 router.get('/id/:_id', PostController.getById);
 router.get('/search/:title', PostController.getPostsByName);
-router.post('/',authentication,PostController.create);
 router.delete('/id/:_id',authentication,isAuthorPost, PostController.delete);
 router.put('/id/:_id',authentication,isAuthorPost, PostController.update);
 router.get('/postsbypage/',authentication,PostController.getPostsByPage);

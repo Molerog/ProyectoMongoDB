@@ -56,9 +56,6 @@ const PostController ={
     },
     async getPostsByName(req, res) {
         try {
-          if (req.params.title.length>20){ //hay que poner un límite para que nadie ponga muchas caracteres por seguridad; tenerlo en cuenta siempre en el backend cuando apliquemos expresiones regulares.
-            return res.status(400).send('Your search was too long')
-          }
           const title = new RegExp(req.params.title, "i"); //la "i" es una expresión regular de RegExp que no tiene en cuenta las mayúsculas.
           const post = await Post.findOne({title}); //lo mismo que name:name
           if(post === null){
@@ -143,11 +140,12 @@ const PostController ={
           const post = await Post.findById(req.params._id)
           .populate('userId', ["name", "email"])
           .populate({ 
-            path: "comments", select: {body:1},
+            path: "comments", select:{body:1,likes:1},
             populate: {
-              path: "userId", select: {name:1}
+              path: "userId", select:{name:1}
             }
-          });                
+          });         
+          console.log(post)       
           res.status(200).send(post)
         } catch (error) {
           res.status(400).send({message: "There was a problem getting that info"})

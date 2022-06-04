@@ -5,15 +5,15 @@ const Post = require('../models/Post')
 const CommentController ={
     async create(req,res,next){
         try {
-            const exist = await Post.findById(req.body.postId)
+            const exist = await Post.findById(req.body.postId)         
             if(exist){
             const comment = await Comment.create({
                 ...req.body,
                 userId: req.user._id,
-                postId: req.body._id
+                postId: req.body.postId
             })
             await Post.findByIdAndUpdate
-            (req.body._id,
+            (req.body.postId,
                 {$push: {comments: comment._id}})
                 res.status(201).send(comment)
             } else res.status(400).send({message: "This post doesn't exist"});
@@ -78,7 +78,7 @@ const CommentController ={
           res.status(200).send(comment)
         }
         else {
-          res.status(400).send({message: "You can't give more likes"})
+          res.status(400).send({message: "You can't remove a like before giving one!"})
         }
         } catch (error) {
           res.status(500).send({message: "There was an issue in the controller" });
