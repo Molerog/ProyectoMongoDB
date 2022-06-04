@@ -15,6 +15,7 @@ const PostSchema = new mongoose.Schema({
         type: ObjectId,
         ref: 'User'
     },
+    imagepath: String,
     likes:[{type: ObjectId}],
     postdate: Date,
     comments:[{type: ObjectId, ref:'Comment'}]

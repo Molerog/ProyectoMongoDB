@@ -5,6 +5,7 @@ const Post = require('../models/Post')
 const CommentController ={
     async create(req,res,next){
         try {
+            if (req.file)req.body.imagepath = req.file.filename; 
             const exist = await Post.findById(req.body.postId)         
             if(exist){
             const comment = await Comment.create({

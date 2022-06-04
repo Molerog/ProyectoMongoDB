@@ -14,6 +14,7 @@ const CommentSchema = new mongoose.Schema({
      type: String,
      required: [true, "You can't post an empty comment!"]
     },
+    imagepath: String,
     likes:[{type: ObjectId}],
     
 }, { timestamps: true });

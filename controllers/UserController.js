@@ -11,6 +11,7 @@ const UserController = {
       if (req.body.password !== undefined) {
         hash = bcrypt.hashSync(req.body.password, 10);
       }
+      if (req.file)req.body.imagepath = req.file.filename; 
       const user = await User.create({
         ...req.body,
         confirmed: true,
