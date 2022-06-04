@@ -14,6 +14,8 @@ router.put('/logout',authentication,isTheUser, UserController.logout);
 router.get('/user',authentication,UserController.getInfo);
 router.get('/id/:_id', UserController.getById);
 router.get('/search/:name', UserController.getUserByName);
+router.put('/follow/:_id',authentication, UserController.followUser);
+router.put('/unfollow/:_id',authentication, UserController.unFollowUser);
 
 
 module.exports = router;

@@ -22,10 +22,10 @@ const UserSchema = new mongoose.Schema(
     },
     role: String,
     confirmed: Boolean,
-    role: "",
     tokens: [],
     postIds: [{type: ObjectId, ref: 'Post'}],
-    wishList: [{type: ObjectId, ref: 'Post'}]
+    wishList: [{type: ObjectId, ref: 'Post'}],
+    followers: [{type: ObjectId, ref: 'User'}]
   },
   { timestamps: true },
 
@@ -41,6 +41,13 @@ UserSchema.pre('save', function(next){
   console.log('user about to be created & saved', this)
   next();
 })
+
+// UserSchema.methods.toJSON = function() {
+//   const user = this._doc
+//   user.totalFollowers2 = user.followers?.length; //el interrogante ignora el error al yo haberle indicado que no buscara en followers (undefined)
+//   return user            
+// }
+
 
 
 const User = mongoose.model("User", UserSchema);
