@@ -87,10 +87,10 @@ const UserController = {
       const user = await User.findByIdAndDelete(req.params._id)
       await Post.deleteMany({userId: req.params._id},
         ({})
-        )
+        );
       await Comment.deleteMany({userId: req.params._id},
         ({})
-        )
+        );
       res.send({ user, message: "User deleted" });
     } catch (error) {
       console.error(error);

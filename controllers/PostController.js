@@ -24,7 +24,7 @@ const PostController ={
     async getAll(req, res) {
         try {
            const posts = await Post.find()
-           .populate('comments') //PREGUNTAR POR QUÉ TENGO QUE PONER ESTO SI SE SUPONE QUE LOS COMENTARIOS YA NO ESTÁN EN LA BASE DE DATOS
+          //  .populate('comments') //PREGUNTAR POR QUÉ TENGO QUE PONER ESTO SI SE SUPONE QUE LOS COMENTARIOS YA NO ESTÁN EN LA BASE DE DATOS
            res.send(posts)
         } catch (error) {
             console.error(error);
