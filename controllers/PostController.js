@@ -4,7 +4,6 @@ const User = require('../models/User');
 const PostController ={
     async create(req,res,next){
         try {
-          console.log('hola')
           if (req.file)req.body.imagepath = req.file.filename; 
             const post = await Post.create({
               ...req.body,
@@ -24,7 +23,7 @@ const PostController ={
     async getAll(req, res) {
         try {
            const posts = await Post.find()
-          //  .populate('comments') //PREGUNTAR POR QUÉ TENGO QUE PONER ESTO SI SE SUPONE QUE LOS COMENTARIOS YA NO ESTÁN EN LA BASE DE DATOS
+          //  .populate('comments') 
            res.send(posts)
         } catch (error) {
             console.error(error);
