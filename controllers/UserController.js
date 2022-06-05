@@ -1,4 +1,6 @@
 const User = require("../models/User");
+const Post = require("../models/Post");
+const Comment = require("../models/Comment");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -82,7 +84,13 @@ const UserController = {
 
   async delete(req, res) {
     try {
-      const user = await User.findByIdAndDelete(req.params._id);
+      const user = await User.findByIdAndDelete(req.params._id)
+      await Post.findOneAndDelete({userId: req.params._id },
+        {$pull: {}}
+        )
+      await Comment.findOneAndDelete({userId: req.params._id },
+        {$pull: {}}
+        )
       res.send({ user, message: "User deleted" });
     } catch (error) {
       console.error(error);
