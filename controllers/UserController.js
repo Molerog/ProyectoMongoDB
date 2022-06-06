@@ -93,7 +93,7 @@ const UserController = {
     }
   },
 
-  async delete(req, res) {
+  async adminDelete(req, res) {
     try {
       const user = await User.findByIdAndDelete(req.params._id)
       // await Post.findByIdAndUpdate({userId: req.params._id},

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const UserController = require ('../controllers/UserController');
-const { authentication,isTheUser } = require('../middleware/authentication');
+const { authentication,isTheUser, isAdmin } = require('../middleware/authentication');
 const {uploadUserImages} = require('../middleware/multer');
 
 
@@ -9,7 +9,7 @@ router.post('/', uploadUserImages.single('imageUser'),UserController.create);
 router.get('/', UserController.getAll);
 router.get('/confirm/:email', UserController.confirm);
 router.post('/login', UserController.login);
-router.delete('/id/:_id',authentication,isTheUser,UserController.delete);
+router.delete('/id/:_id',authentication,isAdmin,UserController.adminDelete);
 router.put('/id/:_id',authentication,isTheUser,uploadUserImages.single('imageUser'), UserController.update);
 router.put('/logout',authentication, UserController.logout);
 router.get('/user',authentication,UserController.getInfo);
