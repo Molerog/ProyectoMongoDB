@@ -11,6 +11,7 @@ const PostController ={
               status: "posted",
               postdate: new Date()
             })
+            console.log(post)
             await User.findByIdAndUpdate(req.user._id,
               {$push: {postIds: post._id}})
             res.status(201).send(post)
