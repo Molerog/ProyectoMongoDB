@@ -85,8 +85,8 @@ const UserController = {
   async delete(req, res) {
     try {
       const user = await User.findByIdAndDelete(req.params._id)
-      // await Post.findOneAndUpdate({userId: req.params._id},
-      //   {$pull: {comments: {id: comments.item._id}}}
+      // await Post.findByIdAndUpdate({userId: req.params._id},
+      //   {$set: {comments: [""]}}
       //   )
       await Post.deleteMany({userId: req.params._id},
         ({}),         
@@ -114,7 +114,8 @@ const UserController = {
   },
   async getAll(req, res) {
     try {
-      const users = await User.find();
+      const users = await User.find()
+      
       res.send(users);
     } catch (error) {
       console.error(error);
