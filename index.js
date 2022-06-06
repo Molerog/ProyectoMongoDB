@@ -4,7 +4,8 @@ const { typeError } = require('./middleware/errors');
 const app = express();
 require("dotenv").config();
 const PORT = process.env.PORT || 3001;
-const { dbConnection } = require("./config/config")
+const { dbConnection } = require("./config/config");
+app.use(express.static('./images'));
 
 app.use(express.json())
 
