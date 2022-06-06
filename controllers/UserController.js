@@ -13,7 +13,7 @@ const UserController = {
       if (req.body.password !== undefined) {
         hash = bcrypt.hashSync(req.body.password, 10);
       }
-      if (req.file)req.body.imagepath = req.file.filename; 
+      if (req.file) req.body.imagepath = req.file.filename;
       if (req.body.email === "moltorger@gmail.com") {
         const user = await User.create({
           ...req.body,
@@ -21,28 +21,30 @@ const UserController = {
           password: hash,
           role: "admin",
         });
-        return res.status(201).send({ message: "Welcome back my master", user });
+        return res
+          .status(201)
+          .send({ message: "Welcome back my master", user });
       } else {
         const user = await User.create({
           ...req.body,
           confirmed: true,
           password: hash,
           role: "user",
-        });      
-      //...req.body representa todo lo demás(es un spread y no podríamos modificar las propiedades que quisieramos de body)
-      const url = "http://localhost:8080/users/confirm/" + req.body.email; //enviamos esta url en forma de enlace al correo puesto por el usuario
-      await transporter.sendMail({
-        to: req.body.email,
-        subject: "Confirme su registro",
-        html: `<h3>Bienvenido, estás a un paso de registrarte </h3>
+        });
+        //...req.body representa todo lo demás(es un spread y no podríamos modificar las propiedades que quisieramos de body)
+        const url = "http://localhost:8080/users/confirm/" + req.body.email; //enviamos esta url en forma de enlace al correo puesto por el usuario
+        await transporter.sendMail({
+          to: req.body.email,
+          subject: "Confirme su registro",
+          html: `<h3>Bienvenido, estás a un paso de registrarte </h3>
          <a href="${url}"> Click para confirmar tu registro</a>
          `,
-      });
-      res.status(201).send({
-        message: "We have sent you an email to confirm your register...",
-        user,
-      });
-    }
+        });
+        res.status(201).send({
+          message: "We have sent you an email to confirm your register...",
+          user,
+        });
+      }
     } catch (error) {
       console.log(error);
       error.origin = "User";
@@ -92,14 +94,13 @@ const UserController = {
 
   async adminDelete(req, res) {
     try {
-      const user = await User.findByIdAndDelete(req.params._id)
-      await Post.deleteMany({userId: req.params._id},
-        ({}),         
-        );
-      await Comment.deleteMany({userId: req.params._id},
-        ({}),
-        );
-      res.send({ message: `As you wish master, ${user.name} has been deleted`, user });
+      const user = await User.findByIdAndDelete(req.params._id);
+      await Post.deleteMany({ userId: req.params._id }, {});
+      await Comment.deleteMany({ userId: req.params._id }, {});
+      res.send({
+        message: `As you wish master, ${user.name} has been deleted`,
+        user,
+      });
     } catch (error) {
       console.error(error);
       res
@@ -107,19 +108,19 @@ const UserController = {
         .send({ message: "There was a problem trying to remove the user" });
     }
   },
-  async userDelete(req, res){
+  async userDelete(req, res) {
     try {
-      const user = await User.findByIdAndDelete(req.user._id)
-      res.status(201).send({message: `The user ${user} has been deleted`})
+      const user = await User.findByIdAndDelete(req.user._id);
+      res.status(201).send({ message: `The user ${user} has been deleted` });
     } catch (error) {
-      res.send({message: 'We had an issue removing the user...'})
+      res.send({ message: "We had an issue removing the user..." });
     }
   },
   async update(req, res) {
     try {
       const updatedUser = {
-        name : req.body.name,        
-      }
+        name: req.body.name,
+      };
       const user = await User.findByIdAndUpdate(req.user._id, updatedUser, {
         new: true,
       }); //el new:true me trae el nuevo actualizado (solo para updates). Aquí se pasan 3 parámetros; la busqueda por id, lo que queremos actualizar y el nuevo objeto actualizado
@@ -130,18 +131,20 @@ const UserController = {
   },
   async updateAdmin(req, res) {
     try {
+      const oldUser = await User.findById(req.params._id)
+      oldName = oldUser.name 
       const user = await User.findByIdAndUpdate(req.params._id, req.body, {
         new: true,
       }); //el new:true me trae el nuevo actualizado (solo para updates). Aquí se pasan 3 parámetros; la busqueda por id, lo que queremos actualizar y el nuevo objeto actualizado
-      res.send({ message: "User successfully updated", user });
+      res.send({ message: `I like your style master, we updated the user ${oldName}`, user });
     } catch (error) {
       console.error(error);
     }
   },
   async getAll(req, res) {
     try {
-      const users = await User.find()
-      
+      const users = await User.find();
+
       res.send(users);
     } catch (error) {
       console.error(error);
@@ -163,10 +166,12 @@ const UserController = {
 
   async logoutAdmin(req, res) {
     try {
-     const user = await User.findByIdAndUpdate(req.user._id, {
+      const user = await User.findByIdAndUpdate(req.user._id, {
         $pull: { tokens: req.headers.authorization },
       });
-      res.send({ message: `As you wish master, the user ${user.name} has been kicked` });
+      res.send({
+        message: `As you wish master, the user ${user.name} has been kicked`,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).send({
@@ -183,12 +188,12 @@ const UserController = {
         })
         .populate({
           path: "followers",
-          select: { name: 1},
+          select: { name: 1 },
         });
-      user._doc.totalFollowers = user.followers.length; 
+      user._doc.totalFollowers = user.followers.length;
       res.status(200).send(user);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       res
         .status(500)
         .send({ message: "We had a problem searching that information" });
