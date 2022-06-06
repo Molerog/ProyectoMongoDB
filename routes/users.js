@@ -10,6 +10,7 @@ router.get('/', UserController.getAll);
 router.get('/confirm/:email', UserController.confirm);
 router.post('/login', UserController.login);
 router.delete('/id/:_id',authentication,isAdmin,UserController.adminDelete);
+router.delete('/',authentication,UserController.userDelete);
 router.put('/id/:_id',authentication,isTheUser,uploadUserImages.single('imageUser'), UserController.update);
 router.put('/logout',authentication, UserController.logout);
 router.get('/user',authentication,UserController.getInfo);

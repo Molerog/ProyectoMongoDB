@@ -28,9 +28,7 @@ const UserController = {
           confirmed: true,
           password: hash,
           role: "user",
-        });
-        res.status(201).send({ message: "User created", user });
-      }
+        });      
       //...req.body representa todo lo demás(es un spread y no podríamos modificar las propiedades que quisieramos de body)
       const url = "http://localhost:8080/users/confirm/" + req.body.email; //enviamos esta url en forma de enlace al correo puesto por el usuario
       await transporter.sendMail({
@@ -44,13 +42,13 @@ const UserController = {
         message: "We have sent you an email to confirm your register...",
         user,
       });
+    }
     } catch (error) {
       console.log(error);
       error.origin = "User";
       next(error);
     }
   },
-
   async confirm(req, res) {
     //esta función confirm se aplica cuando clicamos en el enlace enviado al email
     try {
@@ -105,12 +103,20 @@ const UserController = {
       await Comment.deleteMany({userId: req.params._id},
         ({}),
         );
-      res.send({ user, message: "User deleted" });
+      res.send({ message: `As you wish master, ${user.name} has been deleted`, user });
     } catch (error) {
       console.error(error);
       res
         .status(500)
         .send({ message: "There was a problem trying to remove the user" });
+    }
+  },
+  async userDelete(req, res){
+    try {
+      const user = await User.findByIdAndDelete(req.user._id)
+      res.status(201).send({message: `The user ${user} has been deleted`})
+    } catch (error) {
+      res.send({message: 'We had an issue removing the user...'})
     }
   },
   async update(req, res) {
