@@ -63,7 +63,6 @@ const UserController = {
       console.error(error);
     }
   },
-
   async login(req, res) {
     try {
       const user = await User.findOne({ email: req.body.email });
@@ -94,9 +93,6 @@ const UserController = {
   async adminDelete(req, res) {
     try {
       const user = await User.findByIdAndDelete(req.params._id)
-      // await Post.findByIdAndUpdate({userId: req.params._id},
-      //   {$set: {comments: [""]}}
-      //   )
       await Post.deleteMany({userId: req.params._id},
         ({}),         
         );
@@ -121,6 +117,19 @@ const UserController = {
   },
   async update(req, res) {
     try {
+      const updatedUser = {
+        name : req.body.name,        
+      }
+      const user = await User.findByIdAndUpdate(req.user._id, updatedUser, {
+        new: true,
+      }); //el new:true me trae el nuevo actualizado (solo para updates). Aquí se pasan 3 parámetros; la busqueda por id, lo que queremos actualizar y el nuevo objeto actualizado
+      res.send({ message: "User successfully updated", user });
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  async updateAdmin(req, res) {
+    try {
       const user = await User.findByIdAndUpdate(req.params._id, req.body, {
         new: true,
       }); //el new:true me trae el nuevo actualizado (solo para updates). Aquí se pasan 3 parámetros; la busqueda por id, lo que queremos actualizar y el nuevo objeto actualizado
@@ -138,12 +147,26 @@ const UserController = {
       console.error(error);
     }
   },
-  async logout(req, res) {
+  async logoutUser(req, res) {
     try {
       await User.findByIdAndUpdate(req.user._id, {
         $pull: { tokens: req.headers.authorization },
       });
       res.send({ message: "Disconnected" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: "We had a problem trying to disconnect you",
+      });
+    }
+  },
+
+  async logoutAdmin(req, res) {
+    try {
+     const user = await User.findByIdAndUpdate(req.user._id, {
+        $pull: { tokens: req.headers.authorization },
+      });
+      res.send({ message: `As you wish master, the user ${user.name} has been kicked` });
     } catch (error) {
       console.error(error);
       res.status(500).send({

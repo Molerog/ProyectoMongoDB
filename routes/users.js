@@ -11,8 +11,10 @@ router.get('/confirm/:email', UserController.confirm);
 router.post('/login', UserController.login);
 router.delete('/id/:_id',authentication,isAdmin,UserController.adminDelete);
 router.delete('/',authentication,UserController.userDelete);
-router.put('/id/:_id',authentication,isTheUser,uploadUserImages.single('imageUser'), UserController.update);
-router.put('/logout',authentication, UserController.logout);
+router.put('/id/',authentication,isTheUser,uploadUserImages.single('imageUser'),UserController.update);
+router.put('/id/:_id',authentication,isAdmin,uploadUserImages.single('imageUser'), UserController.updateAdmin);
+router.put('/logout',authentication, UserController.logoutUser);
+router.put('logout/:_id', authentication,isAdmin, UserController.logoutAdmin)
 router.get('/user',authentication,UserController.getInfo);
 router.get('/id/:_id', UserController.getById);
 router.get('/search/:name', UserController.getUserByName);
