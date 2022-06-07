@@ -163,6 +163,7 @@ const UserController = {
         "email",
         "role",
         "followers",
+        "imagepath"
       ]);
       res.send(users);
     } catch (error) {
