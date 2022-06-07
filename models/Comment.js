@@ -19,6 +19,10 @@ const CommentSchema = new mongoose.Schema({
     
 }, { timestamps: true });
 
+CommentSchema.pre('remove', function(next){
+    this.model('Assignment').remove({comments: this._id}, next)
+  })
+
 const Comment = mongoose.model('Comment', CommentSchema);
 
 module.exports = Comment;

@@ -94,9 +94,21 @@ const UserController = {
 
   async adminDelete(req, res) {
     try {
-      const user = await User.findByIdAndDelete(req.params._id);
+      await User.findById(req.params._id);
+      if (req.user._id.toString() === req.params._id)
+        return res
+          .status(201)
+          .send({
+            message:
+              "But...why should I eliminate my own master? I'm not ready for that...I love you",
+          });
+      await Post.updateMany(
+        { userId: req.params._id },
+        { $unset: [{ comments: 1 }] }
+      );
       await Post.deleteMany({ userId: req.params._id }, {});
       await Comment.deleteMany({ userId: req.params._id }, {});
+      const user = await User.findByIdAndDelete(req.params._id);
       res.send({
         message: `As you wish master, ${user.name} has been deleted`,
         user,
@@ -131,20 +143,27 @@ const UserController = {
   },
   async updateAdmin(req, res) {
     try {
-      const oldUser = await User.findById(req.params._id)
-      oldName = oldUser.name 
+      const oldUser = await User.findById(req.params._id);
+      oldName = oldUser.name;
       const user = await User.findByIdAndUpdate(req.params._id, req.body, {
         new: true,
       }); //el new:true me trae el nuevo actualizado (solo para updates). Aquí se pasan 3 parámetros; la busqueda por id, lo que queremos actualizar y el nuevo objeto actualizado
-      res.send({ message: `I like your style master, we updated the user ${oldName}`, user });
+      res.send({
+        message: `I like your style master, we updated the user ${oldName}`,
+        user,
+      });
     } catch (error) {
       console.error(error);
     }
   },
   async getAll(req, res) {
     try {
-      const users = await User.find();
-
+      const users = await User.find().select([
+        "name",
+        "email",
+        "role",
+        "followers",
+      ]);
       res.send(users);
     } catch (error) {
       console.error(error);
@@ -183,6 +202,7 @@ const UserController = {
   async getInfo(req, res) {
     try {
       const user = await User.findById(req.user._id) // también se puede User.findOne({_id: req.user._id})
+        .select(['-password', '-tokens'])
         .populate({
           path: "postIds",
         })
@@ -234,6 +254,11 @@ const UserController = {
   },
   async followUser(req, res) {
     try {
+      await User.findById(req.params._id);
+      if (req.user._id.toString() === req.params._id)
+        return res
+          .status(201)
+          .send({ message: "You are not so cool to follow yourself" });
       const exist = await User.findById(req.params._id);
       if (!exist.followers.includes(req.user._id)) {
         const user = await User.findByIdAndUpdate(
@@ -241,7 +266,7 @@ const UserController = {
           { $push: { followers: req.user._id } },
           { new: true }
         );
-        res.send(user.name);
+        res.status(201).send({ message: `Now you are following ${user.name}` });
       } else {
         res.status(400).send({ message: "You can't follow twice!" });
       }

@@ -37,10 +37,14 @@ UserSchema.post('save', function (doc, next) {
   next();
 })
 
-//fire a function before doc saved to db
+// fire a function before doc saved to db
 UserSchema.pre('save', function(next){
   console.log('user about to be created & saved', this)
   next();
+})
+
+UserSchema.pre('remove', function(next){
+  this.model('User').remove({followers: this._id}, next)
 })
 
 // UserSchema.methods.toJSON = function() {

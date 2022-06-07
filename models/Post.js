@@ -5,7 +5,7 @@ const PostSchema = new mongoose.Schema({
     status : String,
     title: {
        type: String,
-       required: [true, 'You need to provided a title to your post']
+       required: [true, 'You need to provide a title to your post']
     },
     body: {
        type: String,
@@ -20,6 +20,12 @@ const PostSchema = new mongoose.Schema({
     postdate: Date,
     comments:[{type: ObjectId, ref:'Comment'}]
 }, { timestamps: true });
+
+PostSchema.pre('remove', function(next){
+    this.model('Post').remove({Comment_Id: this._id}, next)
+  })
+
+
 
 const Post = mongoose.model('Post', PostSchema);
 

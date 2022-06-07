@@ -51,6 +51,8 @@ const CommentController ={
       },
       async like(req, res) {
         try {
+          const comment = await Comment.findById(req.params._id)
+          if (!comment) return res.status(400).send({message: "You cant't give a like to a comment that doesn't exist"})
           const exist = await Comment.findById(req.params._id)
           if (!exist.likes.includes(req.user._id)){
           const comment = await Comment.findByIdAndUpdate(
