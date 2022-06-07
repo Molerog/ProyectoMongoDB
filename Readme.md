@@ -90,6 +90,7 @@ PASS_NODEMAILER = <Password del email>
 - Dotenv
 - Validator
 - Jest
+- Swagger
 
 <br>
 
@@ -112,7 +113,7 @@ Otro reto fue implementar Jest con mongoose pues fue necesario crear una conexi�
 
 Agradecimientos a Sofía, Ger e Iván por su inestimable ayuda para sacar adelante el proyecto. 
 
-Gracias al los compañeros que siempre se ofrecen a ayudar en los momentos de bloqueo mental.
+Gracias a todos los compañeros que siempre se ofrecen a ayudar en los momentos de bloqueo mental. ¡Sois unos cracks!
 
 <br>
 
@@ -121,8 +122,15 @@ Gracias al los compañeros que siempre se ofrecen a ayudar en los momentos de bl
 - Creación de semillas en Mongoose
 - Más endpoints para el Admin
 - Añadir más roles
-- Añadir Swagger a la documentación
 
+
+<br>
+
+# Autor 🐧
+
+Germán Molero
+
+- https://github.com/Molerog
 
 
 
