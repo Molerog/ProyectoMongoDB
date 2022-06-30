@@ -1,4 +1,5 @@
 const { application } = require("express");
+const cors = require('cors')
 const express = require("express");
 const { typeError } = require('./middleware/errors');
 const app = express();
@@ -10,6 +11,7 @@ const { dbConnection } = require("./config/config");
 app.use(express.static('./images'));
 
 app.use(express.json())
+app.use(cors())
 
 dbConnection()
 
