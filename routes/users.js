@@ -13,7 +13,7 @@ router.delete('/id/:_id',authentication,isAdmin,UserController.adminDelete);
 router.delete('/',authentication,UserController.userDelete);
 router.put('/',authentication, uploadUserImages.single('imageUser'),UserController.update);
 router.put('/id/:_id',authentication,isAdmin,uploadUserImages.single('imageUser'), UserController.updateAdmin);
-router.put('/logout',authentication, UserController.logoutUser);
+router.delete('/logout',authentication, UserController.logoutUser);
 router.put('logout/:_id', authentication,isAdmin, UserController.logoutAdmin)
 router.get('/user',authentication,UserController.getInfo);
 router.get('/id/:_id', UserController.getById);

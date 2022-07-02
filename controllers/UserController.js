@@ -45,15 +45,13 @@ const UserController = {
         //  `,
         // });
         return res.status(201).send({
-          message: "We have sent you an email to confirm your register...",
+          message: "¡El registro ha sido un éxito!",
           user,
         });
        
       }
-    } catch (error) {
-    
-      console.log(error);
-     
+    } catch (error) {    
+      console.log(error);     
       error.origin = "User";
       next(error);
     }
@@ -78,7 +76,7 @@ const UserController = {
       if (!user) {
         return res
           .status(400)
-          .send({ message: "User or password incorrect..." });
+          .send({ message: "Usuario o contraseña incorrectos..." });
       }
       if (!user.confirmed) {
         return res.status(400).send({ message: "You may confirm your email" });
@@ -93,7 +91,7 @@ const UserController = {
       if (user.tokens.length > 4) user.tokens.shift();
       user.tokens.push(token);
       await user.save();
-      res.send({ message: "Welcome " + user.name, user, token });
+      res.send({ message: "Bienvenido " + user.name, user, token });
     } catch (error) {
       res.status(401).send({ message: "We had an issue checking the user..." });
     }
