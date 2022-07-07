@@ -17,7 +17,7 @@ router.delete('/logout',authentication, UserController.logoutUser);
 router.put('logout/:_id', authentication,isAdmin, UserController.logoutAdmin)
 router.get('/user',authentication,UserController.getInfo);
 router.get('/id/:_id', UserController.getById);
-router.get('/search/:name', UserController.getUserByName);
+router.get('/searchByName/:name', UserController.getUserByName);
 router.put('/follow/:_id',authentication, UserController.followUser);
 router.put('/unfollow/:_id',authentication, UserController.unFollowUser);
 

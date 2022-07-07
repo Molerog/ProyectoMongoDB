@@ -1,7 +1,10 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
 
+
+
 const PostController ={
+
     async create(req,res,next){
         try {
           if (req.file)req.body.imagepath = req.file.filename; 
@@ -47,11 +50,19 @@ const PostController ={
             res.status(400).send({message: "You may need to introduce a valid Id format"})
             return
           }
-            const post = await Post.findById(req.params._id) //atengo al _id
+            const post = await Post.findById(req.params._id)
+            .populate('userId', ["name", "email"])
+          .populate({ 
+            path: "comments", select:{body:1,likes:1},
+            populate: {
+              path: "userId", select:{name:1}
+            }
+          });          //atengo al _id
             if(post === null){
               res.status(400).send({message: "The id you introduced doesn't exist"})
               return
             }
+            
             res.send(post)
         } catch (error) {
             console.error(error);
@@ -60,7 +71,7 @@ const PostController ={
     async getPostsByName(req, res) {
         try {
           const title = new RegExp(req.params.title, "i"); //la "i" es una expresión regular de RegExp que no tiene en cuenta las mayúsculas.
-          const post = await Post.findOne({title}); //lo mismo que name:name
+          const post = await Post.find({title}); //lo mismo que name:name
           if(post === null){
             res.status(400).send({message: "Sorry, we can't find that post"})
             return
@@ -85,8 +96,7 @@ const PostController ={
           if (post === null){
             res.status(400).send({message: "The post you try to update doesn't exist"})
             return
-          }
-          
+          }         
           res.send({ message: "Post successfully updated", post });
         } catch (error) {
           console.error(error);

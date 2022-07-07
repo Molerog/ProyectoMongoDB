@@ -168,7 +168,8 @@ const UserController = {
         "email",
         "role",
         "followers",
-        "imagepath"
+        "imagepath",
+        "following",
       ]);
       res.send(users);
     } catch (error) {
@@ -215,7 +216,11 @@ const UserController = {
         .populate({
           path: "followers",
           select: { name: 1 },
-        });
+        })
+        .populate({
+          path: 'following',
+          select : {name:1}
+        })
       user._doc.totalFollowers = user.followers.length;
       res.status(200).send(user);
     } catch (error) {
@@ -248,7 +253,7 @@ const UserController = {
   async getUserByName(req, res) {
     try {
       const name = new RegExp(req.params.name, "i"); //la "i" es una expresión regular de RegExp que no tiene en cuenta las mayúsculas.
-      const post = await User.findOne({ name }); //lo mismo que name:name
+      const post = await User.find({ name }); //lo mismo que name:name
       if (post === null) {
         res.status(400).send({ message: "Sorry, we can't find that User" });
         return;
@@ -272,7 +277,12 @@ const UserController = {
           { $push: { followers: req.user._id } },
           { new: true }
         );
-        res.status(201).send({ message: `Now you are following ${user.name}` });
+        const user2 = await User.findByIdAndUpdate(
+          req.user._id,                       
+          { $push: { following: req.params._id } },        
+          { new: true } 
+      );
+        res.status(201).send({ message: `Now you are following ${user.name}`, user, user2 });
       } else {
         res.status(400).send({ message: "You can't follow twice!" });
       }

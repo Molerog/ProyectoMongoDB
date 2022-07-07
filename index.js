@@ -1,4 +1,4 @@
-const { application } = require("express");
+
 const cors = require('cors')
 const express = require("express");
 const { typeError } = require('./middleware/errors');
