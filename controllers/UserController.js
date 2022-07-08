@@ -137,6 +137,9 @@ const UserController = {
     try {
       const updatedUser = {
         name: req.body.name,
+        imagepath: req.file?.filename,
+        email: req.body.email,
+        password: req.body.password,
       };
       const user = await User.findByIdAndUpdate(req.user._id, updatedUser, {
         new: true,
