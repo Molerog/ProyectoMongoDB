@@ -28,6 +28,7 @@ const UserSchema = new mongoose.Schema(
     wishList: [{type: ObjectId, ref: 'Post'}],
     followers: [{type: ObjectId, ref: 'User'}],
     following: [{ type: ObjectId, ref: 'User'}],
+    
   },
   { timestamps: true },
   
@@ -48,11 +49,12 @@ UserSchema.pre('remove', function(next){
   this.model('User').remove({followers: this._id}, next)
 })
 
-// UserSchema.methods.toJSON = function() {
-//   const user = this._doc
-//   user.totalFollowers2 = user.followers?.length; //el interrogante ignora el error al yo haberle indicado que no buscara en followers (undefined)
-//   return user            
-// }
+UserSchema.methods.toJSON = function() {
+  const user = this._doc
+  // user.totalFollowers2 = user.followers?.length; //el interrogante ignora el error al yo haberle indicado que no buscara en followers (undefined)
+  delete user.password
+  return user            
+}
 
 
 

@@ -15,7 +15,14 @@ const UserController = {
         hash = bcrypt.hashSync(req.body.password, 10);
       }
   
-      if (req.file) req.body.imagepath = req.file.filename;
+      if (req.file){
+        req.body.imagepath = req.file.filename
+      } else {
+        if (req.file)req.body.imagepath = (req.file.filename);
+            else{
+                req.body.imagepath = "default.png"
+            }
+      }
       if (req.body.email === "moltorger@gmail.com") {
         const user = await User.create({
           ...req.body,
@@ -127,7 +134,9 @@ const UserController = {
   },
   async userDelete(req, res) {
     try {
-      const user = await User.findByIdAndDelete(req.user._id);
+      const user = await User.findByIdAndDelete(req.user._id)
+      await Post.deleteMany({userId:req.user._id})
+      await Comment.deleteMany({userId:req.user._id});
       res.status(201).send({ message: `The user ${user} has been deleted` });
     } catch (error) {
       res.send({ message: "We had an issue removing the user..." });
@@ -141,9 +150,16 @@ const UserController = {
         email: req.body.email,
         password: req.body.password,
       };
+      
       const user = await User.findByIdAndUpdate(req.user._id, updatedUser, {
         new: true,
-      }); //el new:true me trae el nuevo actualizado (solo para updates). Aquí se pasan 3 parámetros; la busqueda por id, lo que queremos actualizar y el nuevo objeto actualizado
+      }).populate({
+        path: "tokens",
+        select: { name: 1 },
+      }); 
+      
+      //el new:true me trae el nuevo actualizado (solo para updates). Aquí se pasan 3 parámetros; la busqueda por id, lo que queremos actualizar y el nuevo objeto actualizado
+      console.log(user)
       res.send({ message: "User successfully updated", user });
     } catch (error) {
       console.error(error);
@@ -224,6 +240,10 @@ const UserController = {
           path: 'following',
           select : {name:1}
         })
+        .populate({
+          path: 'imagepath',
+          select : {name:1}
+        })
       user._doc.totalFollowers = user.followers.length;
       res.status(200).send(user);
     } catch (error) {
@@ -233,7 +253,8 @@ const UserController = {
         .send({ message: "We had a problem searching that information" });
     }
   },
-  async getById(req, res) {
+  async getById(req, res) 
+  {
     try {
       if (req.params._id.length !== 24) {
         res
@@ -241,14 +262,17 @@ const UserController = {
           .send({ message: "You may need to introduce a valid Id format" });
         return;
       }
-      const post = await User.findById(req.params._id); //atengo al _id
-      if (post === null) {
+      const user = await User.findById(req.params._id)
+      .populate({
+        path: "postIds",
+      }); //atengo al _id
+      if (user === null) {
         res
           .status(400)
           .send({ message: "The id you introduced doesn't exist" });
         return;
       }
-      res.send(post);
+      res.send(user);
     } catch (error) {
       console.error(error);
     }

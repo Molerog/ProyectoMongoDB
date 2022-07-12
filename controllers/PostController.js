@@ -4,7 +4,12 @@ const User = require("../models/User");
 const PostController = {
   async create(req, res, next) {
     try {
-      if (req.file) req.body.imagepath = req.file.filename;
+      if (req.file){
+        req.body.imagepath = req.file.filename
+      } else{
+          req.body.imagepath = "noImage.png"
+      }
+        
       const post = await Post.create({
         ...req.body,
         userId: req.user._id, //guardo la ID del dueño del post
@@ -24,7 +29,7 @@ const PostController = {
   },
   async getAll(req, res) {
     try {
-      const posts = await Post.find().populate("userId");
+      const posts = await Post.find().populate("userId").populate("comments");
       res.send(posts);
     } catch (error) {
       console.error(error);
@@ -52,13 +57,13 @@ const PostController = {
         return;
       }
       const post = await Post.findById(req.params._id)
-        .populate("userId", ["name", "email"])
+        .populate("userId", ["name", "email","imagepath"])
         .populate({
           path: "comments",
           select: { body: 1, likes: 1 },
           populate: {
             path: "userId",
-            select: { name: 1 },
+            select: { name: 1,imagepath:1 },
           },
         }); //atengo al _id
       if (post === null) {
@@ -76,7 +81,7 @@ const PostController = {
   async getPostsByName(req, res) {
     try {
       const title = new RegExp(req.params.title, "i"); //la "i" es una expresión regular de RegExp que no tiene en cuenta las mayúsculas.
-      const post = await Post.find({ title }); //lo mismo que name:name
+      const post = await Post.find({ title }).populate('userId'); //lo mismo que name:name
       if (post === null) {
         res.status(400).send({ message: "Sorry, we can't find that post" });
         return;
@@ -104,7 +109,7 @@ const PostController = {
         {
           title: req.body.title,
           body: req.body.title,
-          imagepath: req.file.filename,
+          // imagepath: req.file.filename,
         },
         { new: true }
       ); //el new:true me trae el nuevo actualizado. Aquí se pasan 3 parámetros; la busqueda por id, lo que queremos actualizar y el nuevo objeto actualizado
@@ -121,13 +126,14 @@ const PostController = {
   },
   async like(req, res) {
     try {
-      const exist = await Post.findById(req.params._id);
+      const exist = await Post.findById(req.params._id).populate('userId');
       if (!exist.likes.includes(req.user._id)) {
         const post = await Post.findByIdAndUpdate(
           req.params._id,
           { $push: { likes: req.user._id } },
           { new: true }
-        );
+        ).populate("userId", ["imagepath","name"])
+        
         await User.findByIdAndUpdate(
           req.user._id,
           { $push: { wishList: req.params._id } },
@@ -143,13 +149,14 @@ const PostController = {
   },
   async removeLike(req, res) {
     try {
-      const exist = await Post.findById(req.params._id);
+      const exist = await Post.findById(req.params._id)
+      
       if (exist.likes.includes(req.user._id)) {
         const post = await Post.findByIdAndUpdate(
           req.params._id,
           { $pull: { likes: req.user._id } },
           { new: true }
-        );
+        ).populate("userId", ["imagepath","name"]);
         await User.findByIdAndUpdate(
           req.user._id,
           { $pull: { wishList: req.params._id } },
