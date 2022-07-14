@@ -32,7 +32,7 @@ const UserController = {
         });
         return res
           .status(201)
-          .send({ message: "Welcome back my master", user });
+          .send({ message: "Me alegro de verle de vuelta maestro", user });
       } else {
        
         const user = await User.create({

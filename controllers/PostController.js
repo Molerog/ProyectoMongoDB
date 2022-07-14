@@ -108,7 +108,7 @@ const PostController = {
         req.params._id,
         {
           title: req.body.title,
-          body: req.body.title,
+          body: req.body.body,
           // imagepath: req.file.filename,
         },
         { new: true }
